@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Tugas Grafkom</title>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+</body>
+
+</html>
+
+<script type="module">
+    import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/build/three.module.js';
+    import { OrbitControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/loaders/GLTFLoader.js';
+
+    // Scene
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('black');
+    //
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(45, 2, 0.1, 100);
+    camera.position.set(0, 5, 5);
+    //
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: true,
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.gammaOutput = true;
+    //
+
+    // Orbit Control
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enablePan = false;
+    controls.enableDamping = true;
+    controls.rotateSpeed = - 0.5;
+    //
+
+    renderer.render(scene, camera, controls);
+
+    // Panorama
+    const loaderBG = new THREE.CubeTextureLoader();
+    const bgTexture = loaderBG.load([
+        './langit/px.png',
+        './langit/nx.png',
+        './langit/py.png',
+        './langit/ny.png',
+        './langit/pz.png',
+        './langit/nz.png',
+    ]);
+    scene.background = bgTexture;
+    //
+
+    // Light
+    const ambientColor = 0xFFFFFF;
+    const intensity1 = 0.5;
+    const ambient = new THREE.AmbientLight(ambientColor, intensity1);
+    scene.add(ambient);
+
+    const color = 0xFFFFFF;
+    const intensity = 1;
+    const lightDir = new THREE.DirectionalLight(color, intensity);
+    lightDir.position.set(3, 10, 5);
+    lightDir.target.position.set(0, 1, 0);
+    lightDir.castShadow = true;
+    lightDir.intensity = 0.8;
+    lightDir.shadow.mapSize.width = 1024;
+    lightDir.shadow.mapSize.height = 1024;
+
+    let intens = 50;
+
+    lightDir.shadow.camera.left = -intens;
+    lightDir.shadow.camera.right = intens;
+    lightDir.shadow.camera.top = intens;
+    lightDir.shadow.camera.bottom = -intens;
+    scene.add(lightDir);
+    //
+
+    // Plane
+    function makePlane() {
+        const planeSize = 20;
+
+        const loader = new THREE.TextureLoader();
+        const texture = loader.load('https://dl.polyhaven.org/file/ph-assets/Textures/jpg/4k/weathered_brown_planks/weathered_brown_planks_diff_4k.jpg');
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.magFilter = THREE.NearestFilter;
+        const repeats = planeSize / 2;
+        texture.repeat.set(repeats, repeats);
+
+        const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);
+        const planeMat = new THREE.MeshPhongMaterial({
+            map: texture,
+            side: THREE.DoubleSide,
+        });
+        const mesh = new THREE.Mesh(planeGeo, planeMat);
+        mesh.name = 'plane';
+        mesh.rotation.x = Math.PI * 0.5;
+        mesh.receiveShadow = true;
+        scene.add(mesh);
+    }
+    makePlane();
+    //
+
+    // Kubus
+    let box1;
+    function makeBox1() {
+        const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+        const material = new THREE.MeshPhysicalMaterial({
+            color: 0x806000,
+            flatShading: true,
+        });
+        box1 = new THREE.Mesh(geometry, material);
+        box1.castShadow = true;
+        box1.receiveShadow = true;
+        scene.add(box1);
+        box1.position.set(0, 1.2, 0);
+    }
+    makeBox1();
+    //
+
+    // Load Object
+    const gltfLoader = new GLTFLoader();
+    let url = 'meja.gltf';
+    gltfLoader.load(url, (gltf) => {
+        const root = gltf.scene;
+        root.traverse(n => {
+            if (n.isMesh) {
+                n.castShadow = true;
+                n.receiveShadow = true;
+            }
+        });
+        scene.add(root);
+    });
+
+    url = 'kursi.gltf';
+    gltfLoader.load(url, (gltf) => {
+        const root = gltf.scene;
+        root.position.x = -1;
+        root.rotation.y = Math.PI * 0.5;
+        root.traverse(n => {
+            if (n.isMesh) {
+                n.castShadow = true;
+                n.receiveShadow = true;
+            }
+        });
+        scene.add(root);
+    });
+
+    gltfLoader.load(url, (gltf) => {
+        const root = gltf.scene;
+        root.position.x = 0.5 * 1.31;
+        root.position.z = -0.5 * 1.31;
+        root.rotation.y = Math.PI * 1.75;
+        root.traverse(n => {
+            if (n.isMesh) {
+                n.castShadow = true;
+                n.receiveShadow = true;
+            }
+        });
+        scene.add(root);
+    });
+
+    gltfLoader.load(url, (gltf) => {
+        const root = gltf.scene;
+        root.position.z = 1;
+        root.rotation.y = Math.PI * 1;
+        root.traverse(n => {
+            if (n.isMesh) {
+                n.castShadow = true;
+                n.receiveShadow = true;
+            }
+        });
+        scene.add(root);
+    });
+    //
+
+    // Fog
+    scene.fog = new THREE.FogExp2(0x798491, 0.05);
+    //
+
+    // Reflective Ball
+    let sphereCamera;
+    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(128, { format: THREE.RGBFormat, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter });
+    sphereCamera = new THREE.CubeCamera(1, 500, cubeRenderTarget);
+    sphereCamera.position.set(0, 3, 0);
+    scene.add(sphereCamera);
+    const sphereMirror = new THREE.MeshBasicMaterial({
+        envMap: sphereCamera.renderTarget,
+    });
+    const sphereGeo = new THREE.SphereGeometry(0.5, 32, 16);
+    const mirrorBall = new THREE.Mesh(sphereGeo, sphereMirror);
+    mirrorBall.position.set(0, 2, 0);
+    scene.add(mirrorBall);
+    //
+
+    function render() {
+        renderer.render(scene, camera);
+        sphereCamera.update(renderer, scene);
+        requestAnimationFrame(render);
+    }
+    document.body.appendChild(renderer.domElement);
+    requestAnimationFrame(render);
+
+
+</script>
