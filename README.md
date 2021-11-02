@@ -17,5 +17,5 @@
 ![hasil2](https://media0.giphy.com/media/MNHQdu9ISPDeFT7ZdX/giphy.gif?cid=790b7611c11821f27ccd30c61767bd4a648d69f54df8e15a&rid=giphy.gif&ct=g)
 
 ## Tugas Individu Loading Objek, dsb
-![hasil3](https://imgur.com/ddb5686d-b456-43ce-80d8-ea3afb4162fe)
-![hasil4](https://imgur.com/fa3d2a6b-6b56-4b89-ac05-795fddf9cad6)
+![hasil3](https://imgur.com/KCYz6Uq)
+![hasil4](https://imgur.com/1Y0zwwO)
